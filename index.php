@@ -160,7 +160,7 @@ $skill = $connection->query('SELECT * FROM `skills` ');
             $name = $_POST['name'];
             $date = date("d-m-Y");
                 if (strpos($comment, 'редиска') !== false) {
-                    $net = 'Записывать данное слово "Редиска" нельзя!!!';
+                    $net = 'Записывать данное слово "Редиска" нельзя!';
                     echo $net;
 
                 }
