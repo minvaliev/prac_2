@@ -175,6 +175,7 @@ $skill = $connection->query('SELECT * FROM `skills` ');
             }
 
         $commentsOfUsers = $connection->query("SELECT * FROM `comments`");
+        
 
         foreach ($commentsOfUsers as $comment) {
         ?>
