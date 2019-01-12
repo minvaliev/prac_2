@@ -1,5 +1,6 @@
 <?php
 $connection = new PDO('mysql:host=localhost; dbname=academy; charset=utf8', 'root', '' );
+$connectionOfForum = new PDO('mysql:host=localhost; dbname=forum; charset=utf8', 'root', '' );
 
 $profile = $connection->query('SELECT * FROM `profile`');
 $profile = $profile->fetchAll();
@@ -147,7 +148,14 @@ $skill = $connection->query('SELECT * FROM `skills` ');
             <?php endforeach ?>
         </section><!--//skills-section-->
 
+        <form method="POST">
+            <div style="clear:both; text-align:right;">
+                <input style="background-color:#2aabd2; border: none; color: lawngreen; font-size: 17px; " type="submit" name="admi" value="Войти в админку" >
+            </div>
+        </form>
+
         <form action="#" method="POST">
+            <h1 style="font-size: 21px; padding-bottom: 10px;">Все сообщения проходят модерацию!</h1>
             <textarea name="comment" cols="30" rows="10" placeholder="Оставить отзыв"></textarea>
             <input type="text" name="name" placeholder="Введите ваше имя">
             <button>Отправить отзыв</button>
@@ -155,9 +163,13 @@ $skill = $connection->query('SELECT * FROM `skills` ');
 
         <?php
 
+        if ($_POST['admi']) {
+            header("Location: admin.php");
+        }
+
         if ($_POST['comment'] && $_POST['name']) {
-            $comment = $_POST['comment'];
-            $name = $_POST['name'];
+            $comment = htmlspecialchars($_POST['comment']);
+            $name = htmlspecialchars($_POST['name']);
             $date = date("d-m-Y");
                 if (strpos($comment, 'редиска') !== false) {
                     $net = 'Записывать данное слово "Редиска" нельзя!';
@@ -165,7 +177,9 @@ $skill = $connection->query('SELECT * FROM `skills` ');
 
                 }
                 else {
-                    $connection->query("INSERT INTO `comments` (`comment`,`name`,`date`) VALUES ('$comment','$name','$date')");
+                    $safe = $connectionOfForum->prepare("INSERT INTO `comments` (`comment`,`username`,`date`) VALUES (:comment, :name,'$date')");
+                    $arr = ['comment' => $comment, 'name' => $name];
+                    $safe->execute($arr);
 
                         if (!empty($_POST)) {
                             echo "Существует";
@@ -174,7 +188,7 @@ $skill = $connection->query('SELECT * FROM `skills` ');
                 }
             }
 
-        $commentsOfUsers = $connection->query("SELECT * FROM `comments`");
+        $commentsOfUsers = $connectionOfForum->query("SELECT * FROM `comments` WHERE moderation='ok' ORDER BY date DESC ");
 
 
         foreach ($commentsOfUsers as $comment) {
@@ -182,7 +196,7 @@ $skill = $connection->query('SELECT * FROM `skills` ');
 
         <div style="font-size: 25px; margin: auto;" >
 
-            <?='#' . $comment['id'] . '. ' . $comment['name']. ', ' .  $comment['date'] . '- "' . $comment['comment'] . '!"'; ?>
+            <?='#' . $comment['id'] . '. ' . $comment['username']. ', ' .  $comment['date'] . '- "' . $comment['comment'] . '!"'; ?>
 
         </div>
 
