@@ -16,14 +16,6 @@
     }
 
 
-//    foreach ($login as $admins) {
-//        if ($_SESSION['login'] == $admins['login'] && $_SESSION['password'] == $admins['password']) {
-//            header("Location: index.php");
-//        }
-//    }
-
-//    $_SESSION['color'] = $_POST['colour'];
-
     if ($_POST['but']) {
         header("Location: registr.php");
     }

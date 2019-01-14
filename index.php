@@ -47,7 +47,16 @@ $skill = $connection->query('SELECT * FROM `skills` ');
 <div class="wrapper">
     <div class="sidebar-wrapper">
         <div class="profile-container">
-            <img class="profile" src="assets/images/1.jpg" alt="" />
+            <?php
+            $avatar = "uploads/avatar.jpg"; // В случае отсутствия аватарки, подставляем путь к дефолтной аватарке.
+            if (!file_exists($avatar)) {
+                $avatar = "uploads/default.jpg";
+            }
+            else {
+                $avatar = "uploads/avatar.jpg";
+            }
+            ?>
+            <img style="width: 100px; height: 100px" class="profile" src="<?=$avatar?>"  alt="" />
             <h1 class="name"><?= $profile[0]["name"] ?></h1>
             <h3 class="tagline"><?= $profile[0]["post"] ?></h3>
         </div><!--//profile-container-->
