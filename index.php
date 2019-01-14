@@ -13,6 +13,30 @@ $experienceStr = $connection->query('SELECT * FROM `experience` ORDER BY yearEnd
 $project = $connection->query('SELECT * FROM `projects` ');
 $skill = $connection->query('SELECT * FROM `skills` ');
 //var_dump($profile);
+
+if ($_POST['admi']) {
+    header("Location: admin.php");
+}
+
+if ($_POST['comment'] && $_POST['name']) {
+    $comment = htmlspecialchars($_POST['comment']);
+    $name = htmlspecialchars($_POST['name']);
+    $date = date("d-m-Y");
+    if (strpos($comment, 'редиска') !== false) {
+        $net = 'Записывать данное слово "Редиска" нельзя!';
+        echo $net;
+
+    }
+    else {
+        $safe = $connectionOfForum->prepare("INSERT INTO `comments` (`comment`,`username`,`date`) VALUES (:comment, :name,'$date')");
+        $arr = ['comment' => $comment, 'name' => $name];
+        $safe->execute($arr);
+
+        if (!empty($_POST)) {
+            header('Location: index.php');
+        }
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -172,41 +196,15 @@ $skill = $connection->query('SELECT * FROM `skills` ');
 
         <?php
 
-        if ($_POST['admi']) {
-            header("Location: admin.php");
-        }
 
-        if ($_POST['comment'] && $_POST['name']) {
-            $comment = htmlspecialchars($_POST['comment']);
-            $name = htmlspecialchars($_POST['name']);
-            $date = date("d-m-Y");
-                if (strpos($comment, 'редиска') !== false) {
-                    $net = 'Записывать данное слово "Редиска" нельзя!';
-                    echo $net;
-
-                }
-                else {
-                    $safe = $connectionOfForum->prepare("INSERT INTO `comments` (`comment`,`username`,`date`) VALUES (:comment, :name,'$date')");
-                    $arr = ['comment' => $comment, 'name' => $name];
-                    $safe->execute($arr);
-
-                        if (!empty($_POST)) {
-                            echo "Существует";
-                            header('Location: index.php');
-                        }
-                }
-            }
-
-        $commentsOfUsers = $connectionOfForum->query("SELECT * FROM `comments` WHERE moderation='ok' ORDER BY date DESC ");
-
-
+        $commentsOfUsers = $connectionOfForum->query("SELECT * FROM `comments` WHERE moderation='ok' ORDER BY id DESC ");
+        $num = 0;
         foreach ($commentsOfUsers as $comment) {
+            $num++;
         ?>
 
         <div style="font-size: 25px; margin: auto;" >
-
-            <?='#' . $comment['id'] . '. ' . $comment['username']. ', ' .  $comment['date'] . '- "' . $comment['comment'] . '!"'; ?>
-
+            <?='#' . $num . '. ' . $comment['username']. ', ' .  $comment['date'] . ' - "' . $comment['comment'] . '!"'; ?>
         </div>
 
         <?php } ?>

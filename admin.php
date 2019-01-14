@@ -7,9 +7,6 @@ $result = $connectionOfForum->query("SELECT * FROM `images` ");
 $result = $result->fetchAll();
 
 
-
-
-
 if (!$_SESSION['login'] || !$_SESSION['password']) {
     header("Location: login.php");
     die();
@@ -24,44 +21,10 @@ if (count($_POST) > 0) {
     header("Location: admin.php");
 }
 
-
-?>
-
-<style>
-    body {
-        background-color: #1b6d85;
-        margin: 20px;
-        font-family: Arial,sans-serif;
-    }
-
-    * {
-        font-size: 30px;
-    }
-
-    button {
-        margin-top: 20px;
-    }
-</style>
-
-<?php if ($_SESSION['login'] == 'Admin') { // Если зашли под админской учётной записью, то выводить следующее содержимое ?>
-
-    <?php
-    if (count($result) == 0 ) { // Если в таблице "images" нет никаких данных, то добавляем новую фотографию.
-        $connectionOfForum->query("INSERT INTO `images` (`imagname`,`extension`) VALUES ('$fileName', '$fileExtension')");
-
-        $lastId = $connectionOfForum->query("SELECT MAX(id) FROM `images` ");
-        $lastId = $lastId->fetchAll();
-        $lastId = $lastId[0][0];
-
-        $fileNameNew = 'avatar' . '.' . 'jpg';
-        $fileDestination = 'uploads/' . $fileNameNew;
-
-        move_uploaded_file($fileTmpName, $fileDestination);
-        echo "Файл успешно загружен!";
-        header("Location: index.php");
-    }
+if ($_SESSION['login'] == 'Admin') { // Если зашли под админской учётной записью, то выводить следующее содержимое
 
     if (isset($_POST['submit'])) {
+
         $argum = $_FILES['file']['name'];
 
         if (count($argum) <= 3) { // Если выбрано больше трёх фотографий, то выводить сообщение "Превышено максимальное колличество загружаемых фотографи".
@@ -98,7 +61,7 @@ if (count($_POST) > 0) {
                                 $fileDestination = 'uploads/' . $fileNameNew;
 
                                 move_uploaded_file($fileTmpName, $fileDestination);
-                                echo "Файл успешно загружен!";
+//                                echo "Файл успешно загружен!";
                                 header("Location: admin.php");
                             }
                             else {
@@ -118,7 +81,7 @@ if (count($_POST) > 0) {
                                 $fileDestination = 'uploads/' . $fileNameNew;
 
                                 move_uploaded_file($fileTmpName, $fileDestination);
-                                echo "Файл успешно загружен!";
+//                                echo "Файл успешно загружен!";
                                 header("Location: admin.php");
                             }
 
@@ -138,6 +101,31 @@ if (count($_POST) > 0) {
             echo "Превышено максимальное колличество загружаемых фотографи";
         }
     }
+
+    ?>
+        <form method="POST" enctype="multipart/form-data">
+            <input type="file" name="file[]">
+            <!--        <input type="file" name="file" required>-->
+            <button name="submit">Отправить</button>
+        </form>
+
+<style>
+    body {
+        background-color: #1b6d85;
+        margin: 20px;
+        font-family: Arial,sans-serif;
+    }
+
+    * {
+        font-size: 30px;
+    }
+
+    button {
+        margin-top: 20px;
+    }
+</style>
+
+    <?php
 
     $data = $connectionOfForum->query("SELECT * FROM `images` ");
     echo "<div style='display: flex;align-items: flex-end; flex-wrap:wrap;'>";
@@ -161,10 +149,10 @@ if (count($_POST) > 0) {
     }
     echo "</div>";
     ?>
-    <form method="POST" enctype="multipart/form-data">
-        <input type="file" name="file[]" multiple>
-        <button name="submit">Отправить</button>
-    </form>
+
+
+
+
 
     <h1>Админка сайта портфолио с правами доступа "Администратор сайта". Вы можете отклонять отзовы и публиковать.</h1>
     <form method="POST">
